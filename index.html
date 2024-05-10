@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Location Tracker</title>
+<style>
+    body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    }
+    #locationButton {
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+</style>
+</head>
+<body>
+
+<button id="locationButton">Get Location</button>
+
+<script>
+document.getElementById('locationButton').addEventListener('click', getLocation);
+
+function getLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(showPosition);
+    } else {
+        alert('Geolocation is not supported by this browser.');
+    }
+}
+
+function showPosition(position) {
+    var latitude = position.coords.latitude;
+    var longitude = position.coords.longitude;
+    var timestamp = new Date().toISOString();
+
+    var data = {
+        latitude: latitude,
+        longitude: longitude,
+        timestamp: timestamp
+    };
+
+    // Send data to PHP script using AJAX
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', 'save_location.php', true);
+    xhr.setRequestHeader('Content-type', 'application/json');
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+            alert('Location saved successfully.');
+        } else {
+            alert('Failed to save location.');
+        }
+    };
+    xhr.send(JSON.stringify(data));
+}
+</script>
+
+</body>
+</html>
